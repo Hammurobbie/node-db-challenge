@@ -42,7 +42,6 @@ router.get("/:id", (req, res) => {
   projects
     .findById(req.params.id)
     .then(pro => {
-      // pro.map(project => {
       pro.completed
         ? projArray.push({
             id: req.params.id,
@@ -50,19 +49,15 @@ router.get("/:id", (req, res) => {
             project_description: pro[0].project_description,
             project_notes: pro[0].project_notes,
             completed: false,
-            tasks: [
-              {
-                task_name: pro[0].task_name,
-                task_description: pro[0].task_description,
-                task_notes: pro[0].task_notes
-              }
-            ],
-            resources: [
-              {
-                resource_name: pro[0].resource_name,
-                resoursce_description: pro[0].resource_description
-              }
-            ]
+            tasks: pro.map(tsk => ({
+              task_name: tsk.task_name,
+              task_description: tsk.task_description,
+              task_notes: tsk.task_notes
+            })),
+            resources: pro.map(rsc => ({
+              resource_name: rsc.resource_name,
+              resoursce_description: rsc.resource_description
+            }))
           })
         : projArray.push({
             id: req.params.id,
@@ -70,19 +65,15 @@ router.get("/:id", (req, res) => {
             project_description: pro[0].project_description,
             project_notes: pro[0].project_notes,
             completed: false,
-            tasks: [
-              {
-                task_name: pro[0].task_name,
-                task_description: pro[0].task_description,
-                task_notes: pro[0].task_notes
-              }
-            ],
-            resources: [
-              {
-                resource_name: pro[0].resource_name,
-                resoursce_description: pro[0].resource_description
-              }
-            ]
+            tasks: pro.map(tsk => ({
+              task_name: tsk.task_name,
+              task_description: tsk.task_description,
+              task_notes: tsk.task_notes
+            })),
+            resources: pro.map(rsc => ({
+              resource_name: rsc.resource_name,
+              resoursce_description: rsc.resource_description
+            }))
           });
 
       console.log("projArray", projArray);
