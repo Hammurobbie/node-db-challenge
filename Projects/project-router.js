@@ -36,50 +36,39 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:id", (req, res) => {
-  const projArray = [];
-
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const tasks = await projects.findTaskByProjectId(id);
+  const resources = await projects.findResourceByProjectId(id);
   projects
-    .findById(req.params.id)
+    .findById(id)
     .then(pro => {
-      pro.completed
-        ? projArray.push({
-            id: req.params.id,
-            project_name: pro[0].project_name,
-            project_description: pro[0].project_description,
-            project_notes: pro[0].project_notes,
-            completed: false,
-            tasks: pro.map(tsk => ({
-              task_name: tsk.task_name,
-              task_description: tsk.task_description,
-              task_notes: tsk.task_notes
-            })),
-            resources: pro.map(rsc => ({
-              resource_name: rsc.resource_name,
-              resoursce_description: rsc.resource_description
-            }))
-          })
-        : projArray.push({
-            id: req.params.id,
-            project_name: pro[0].project_name,
-            project_description: pro[0].project_description,
-            project_notes: pro[0].project_notes,
-            completed: false,
-            tasks: pro.map(tsk => ({
-              task_name: tsk.task_name,
-              task_description: tsk.task_description,
-              task_notes: tsk.task_notes
-            })),
-            resources: pro.map(rsc => ({
-              resource_name: rsc.resource_name,
-              resoursce_description: rsc.resource_description
-            }))
-          });
-
-      console.log("projArray", projArray);
-
-      console.log("pro", pro);
-      res.send(projArray);
+      console.log(
+        "pro",
+        projects.findTaskByProjectId(id).then(task => ({
+          task_name: task.task_name,
+          task_description: task.task_description,
+          task_notes: task.task_notes
+        }))
+      );
+      const project_stuff = {
+        id: id,
+        project_name: pro.project_name,
+        project_description: pro.project_description,
+        project_notes: pro.project_notes,
+        completed: Boolean(pro.completed),
+        tasks: tasks.map(tsk => ({
+          task_name: tsk.task_name,
+          task_description: tsk.task_description,
+          task_notes: tsk.task_notes,
+          completed: Boolean(tsk.completed)
+        })),
+        resources: resources.map(rsrc => ({
+          resource_name: rsrc.resource_name,
+          resource_description: rsrc.resource_description
+        }))
+      };
+      res.status(200).json(project_stuff);
     })
     .catch(err => {
       res.status(500).json({ message: "The projects could not be returned" });

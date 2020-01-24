@@ -4,6 +4,8 @@ module.exports = {
   find,
   findById,
   // tasks,
+  findTaskByProjectId,
+  findResourceByProjectId,
   add,
   update,
   remove
@@ -42,10 +44,33 @@ function find() {
 }
 
 function findById(id) {
-  return db("projects")
-    .join("tasks", "projects.id", "tasks.project_id")
-    .join("resources")
-    .where("projects.id", "=", id);
+  return (
+    db("projects")
+      // .join("tasks", "projects.id", "tasks.project_id")
+      // .join("resources", "projects.id", "resources.project_id")
+      .select(
+        "projects.id",
+        "projects.project_name",
+        "projects.project_description",
+        "projects.completed"
+      )
+      .where({ id })
+      .first()
+  );
+}
+
+function findTaskByProjectId(project_id) {
+  return db("projects as p")
+    .join("tasks as t", "p.id", "t.project_id")
+    .select("t.task_name", "t.task_description", "t.task_notes", "t.completed")
+    .where({ project_id });
+}
+
+function findResourceByProjectId(project_id) {
+  return db("projects as p")
+    .join("resources as r", "p.id", "r.project_id")
+    .select("r.resource_name", "r.resource_description")
+    .where({ project_id });
 }
 
 function add(project) {

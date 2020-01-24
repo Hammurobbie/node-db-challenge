@@ -38,6 +38,14 @@ exports.up = function(knex) {
         .unique()
         .notNullable();
       tbl.text("resource_description");
+      tbl
+        .integer("project_id")
+        .unsigned()
+        .notNullable()
+        .references("id")
+        .inTable("projects")
+        .onUpdate("CASCADE")
+        .onDelete("CASCADE");
     });
 };
 
